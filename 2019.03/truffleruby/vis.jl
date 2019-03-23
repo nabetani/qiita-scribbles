@@ -14,7 +14,7 @@ function to_sec(x)
   m*60+s
 end
 
-envs = [ "2.6.2", "2.6.2/--jit",   "jruby-9.2.6.0", "truffleruby-1.0.0-rc14" ]
+envs = [ "2.6.2", "2.6.2/--jit", "jruby-9.2.6.0", "truffleruby-1.0.0-rc14" ]
 k = sort(collect(keys(data[envs[1]])))
 println(k)
 y = map( env->begin
