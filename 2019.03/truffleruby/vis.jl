@@ -17,10 +17,18 @@ end
 envs = [ "2.6.2", "2.6.2/--jit",   "jruby-9.2.6.0", "truffleruby-1.0.0-rc14" ]
 k = sort(collect(keys(data[envs[1]])))
 println(k)
-for env in envs
+y = map( env->begin
   values = map( x->data[env][x], k )
-  ticks = map( to_sec, values )
-  plot!(ticks, yscale=:log10)
-end
+  return map( to_sec, values )
+end, envs )
+
+plot( y,
+  legend = :topleft,
+  label = envs,
+  xlabel = "Argument of fibo",
+  ylabel = "result of time (real)",
+  xticks = (1:length(k), k),
+  yscale=:log10
+)
 
 savefig("plot.pdf")
