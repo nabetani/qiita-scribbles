@@ -20,7 +20,7 @@ println(k)
 for env in envs
   values = map( x->data[env][x], k )
   ticks = map( to_sec, values )
-  plot!(ticks)
+  plot!(ticks, yscale=:log10)
 end
 
 savefig("plot.pdf")
