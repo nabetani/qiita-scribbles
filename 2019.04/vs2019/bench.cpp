@@ -23,7 +23,7 @@ auto make(size_t n, t const &v) -> std::vector<t>
     return std::vector<t>(n, v);
 }
 
-int64_t sum(int n) { return n; }
+std::int64_t sum(std::int64_t n) { return n; }
 
 template <typename t>
 auto sum(std::vector<t> const &v) -> std::int64_t
@@ -68,21 +68,21 @@ std::int64_t strmap()
     return r;
 }
 
-double fpcalc(){
-    using ary = std::array<double, 8>;
+template< typename fp >
+fp fpcalc( int n ){
+    using ary = std::array<fp, 8>;
     ary a{ 1, 2, 3, 4, 5, 6, 7, 8 };
     ary b{ 9, 8, 7, 6, 5, 4, 3, 2 };
     ary c{0};
-    int N=5000000;
     auto f = []( ary const & x, ary const & y, ary & z ){
         for( size_t i=0 ; i<x.size() ; ++i ){
             z[i] = x[i]/(y[i]+1)/(z[(i+1)%z.size()]+1)+1;
         }
         for( auto & v : z ){
-            v = std::fmod( v, 10 );
+            v = std::fmod( v, fp(10) );
         }
     };
-    for( int i=0 ; i<N ; ++i ){
+    for( int i=0 ; i<n ; ++i ){
         f(a,b,c);
         f(b,c,a);
         f(c,a,b);
@@ -102,9 +102,10 @@ void bench(char const *name, std::function<void()> func)
     std::cout << name << ": " << (diff * 1.0 / freq.QuadPart) << std::endl;
 }
 
-int main()
+int __cdecl main()
 {
-    bench("fpcalc", []() { std::cout << fpcalc() << std::endl; });
+    bench("fpcalc<float>", []() { std::cout << fpcalc<float>(10000000) << std::endl; });
+    bench("fpcalc<double>", []() { std::cout << fpcalc<double>(10000000) << std::endl; });
     bench("strmap", []() { std::cout << strmap() << std::endl; });
     bench("fibo(42)", []() { std::cout << fibo(42) << std::endl; });
     bench("vec", []() { std::cout << vec() << std::endl; });
