@@ -6,13 +6,16 @@ OPTS = %w(
   fp:precise
   permissive-
   std:c++17
-  MT 
+  MT
+  utf-8
+  W4
 ).map{ |e| "/"+e }.join(" ")
 
 def run(name)
-  puts %x( cl #{OPTS} #{name}.cpp 2>&1 )
-  %x( #{name}.exe )
-  puts %x( #{name}.exe )
+  puts %x( cl #{OPTS} #{name}.cpp 2>&1 ).force_encoding("cp932")
+  %x( #{name}.exe ) # 練習
+  puts %x( #{name}.exe ) # 本番
 end
 
 run("original")
+run("modified")

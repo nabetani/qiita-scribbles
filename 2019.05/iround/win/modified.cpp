@@ -2,6 +2,7 @@
 #  include <thread>
 #  include <cmath>
 #  include <iostream>
+#  include <array>
 
 //これが定義していあると、templateを使ったプログラミングに便利
 template<class INTEGRAL_TYPE>
@@ -10,6 +11,7 @@ constexpr int iround(INTEGRAL_TYPE v)
   return static_cast<int>(v);
 }
 
+template<>
 constexpr int iround(float v)
 {
   if(v >= 0) {
@@ -19,6 +21,7 @@ constexpr int iround(float v)
   }
 }
 
+template<>
 constexpr int iround(double v)
 {
   if(v >= 0) {
@@ -28,6 +31,7 @@ constexpr int iround(double v)
   }
 }
 
+template<>
 constexpr int iround(long double v)
 {
   if(v >= 0) {
@@ -65,32 +69,51 @@ private:
   std::chrono::high_resolution_clock::time_point pre_;
 };
 
+template<size_t n>
+double average(std::array<int,n> const & a ){
+    double sum=0;
+    for( auto e : a ){
+        sum+=e;
+    }
+    return sum/a.size();
+}
+
 
 template<class T>
 void test(T r)
 {
     using namespace std;
 
-    int x, x1, x2;
-    int loop_count = 1000000;
+    constexpr int loop_count = 1000000;
+    using dest_t = std::array<int,loop_count>;
+    dest_t & dest0 = *new dest_t; // memory leaks!
+    dest_t & dest1 = *new dest_t; // memory leaks!
+    dest_t & dest2 = *new dest_t; // memory leaks!
+
+    using src_t = std::array<T,loop_count>;
+    src_t & src = *new src_t; // memory leaks!
+    std::fill(src.begin(), src.end(), r);
 
     StopWatch sw;
     for (int z = 0; z < loop_count; z++) {
-        x = iround(r);
+        dest0[z] = iround(src[z]);
     }
-    cout << "self implementation: " << sw.lap() << " ms" << endl;
+    auto lap0 = sw.lap();
+    cout << "self implementation: " << lap0 << " ms" << endl;
     sw.lap();
     for (int z = 0; z < loop_count; z++) {
-        x1 = iround2(r);
+        dest1[z] = iround2(src[z]);
     }
-    cout << "round base: " << sw.lap() << " ms" << endl;
+    auto lap1 = sw.lap();
+    cout << "round base: " << lap1 << " ms" << endl;
     sw.lap();
     for (int z = 0; z < loop_count; z++) {
-        x2 = iround3(r);
+        dest2[z] = iround3(src[z]);
     }
-    cout << "lround base: " << sw.lap() << " ms" << endl;
+    auto lap2 = sw.lap();
+    cout << "lround base: " << lap2 << " ms" << endl;
 
-    cout << r << " " << x << " " << x1 << " "<< x2 <<endl;
+    cout << r << " " << average(dest0) << " " << average(dest1) << " "<< average(dest2) <<endl;
 }
 
 int main()
