@@ -1,0 +1,12 @@
+ちなみに。n=42 での手元の結果は以下の通り：
+
+```
+go1.12.1   real	0m1.823s
+Java12     real	0m1.291s
+C++(C++03/clang) real	0m1.048s
+C++(C++03/g++-8) real	0m0.820s
+C++(C++17/clang) real	0m0.941s
+C++(C++17/g++-8) real	0m0.811s
+```
+
+
