@@ -13,9 +13,6 @@ std::unique_ptr<char[]> returns_ptr() {
 void func(size_t n) {
   // 宣言と定義 ( make_unique は C++14以降 )
   auto p = std::make_unique<int[]>(n); // n は要素数。初期値を入れる方法はない。
-  for (auto ix = 0; ix < n; ++ix) {    // range based for は使えない
-    std::cout << p[ix] << " "; // 初期化されないのでゴミが出る
-  }
   p[0] = 100;
   p[1] = 101;
   p[2] = 102;
@@ -30,6 +27,4 @@ void func(size_t n) {
   std::cout << s.get() << std::endl;
 }
 
-int main() {
-  func(3);
-}
+int main() { func(3); }
