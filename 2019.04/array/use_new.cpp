@@ -21,10 +21,14 @@ void func(size_t n) {
   // unique_ptr + new なら初期値を入れられる。要素数は省略不能。
   auto p1 = std::unique_ptr<int[]>(new int[3]{11, 22, 33});
 
+  // char の配列を文字列で初期化。clang++ は OK だけど、g++-9 はエラー。
+  auto p2 = std::unique_ptr<char[]>(new char[5]{"hoge"});
+  std::cout << p2.get() << "\n";
+
   // unique_ptr + new なら初期化を回避することもできる。
-  auto p2 = std::unique_ptr<int[]>(new int[3]);
+  auto p3 = std::unique_ptr<int[]>(new int[3]);
   for (size_t ix = 0; ix < 3; ++ix) { // range based for は使えない
-    std::cout << p2[ix] << " ";       // 不定の値が出力される
+    std::cout << p3[ix] << " ";       // 不定の値が出力される
   }
   std::cout << std::endl;
 
