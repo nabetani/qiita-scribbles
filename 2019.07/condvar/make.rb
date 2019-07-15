@@ -1,9 +1,17 @@
 require "fileutils"
 
-ccs = [
-  "g++-9 -Wall -O3 -std=c++17",
-  "clang++ -Wall -O3 -std=c++17"
-]
+ccs = case RUBY_PLATFORM
+when /linux/
+  [
+    "g++-8 -Wall -O3 -std=c++17 -lpthread",
+    "clang++ -Wall -O3 -std=c++17 -lpthread"
+  ]
+when /darwin/
+  [
+    "g++-9 -Wall -O3 -std=c++17",
+    "clang++ -Wall -O3 -std=c++17"
+  ]
+end
 
 FileUtils.mkdir_p("bin")
 
