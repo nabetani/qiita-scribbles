@@ -22,6 +22,7 @@ int main() {
     int64_t t1, t2;
     int64_t t0 = tick();
     thread th{[&]() {
+      this_thread::sleep_for( microseconds(1) );
       t1 = tick();
       cv.notify_all();
       t2 = tick();
