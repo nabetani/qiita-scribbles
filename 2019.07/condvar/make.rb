@@ -21,7 +21,7 @@ FileUtils.mkdir_p("bin")
 
 ccs.each do |cc, o|
   target = "bin/#{cc.split(" ").first}.exe"
-  %x( #{cc} main.cpp #{o}#{target} )
+  puts %x( #{cc} main.cpp #{o}#{target} 2>&1 )
   puts "="*20
   puts target
   puts
