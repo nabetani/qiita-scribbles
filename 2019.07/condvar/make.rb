@@ -25,5 +25,5 @@ ccs.each do |cc, o|
   puts "="*20
   puts target
   puts
-  puts %x( #{target} )
+  puts %x( #{target} #{ARGV.join(" ")})
 end
