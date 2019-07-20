@@ -10,9 +10,9 @@ using namespace std;
 using namespace std::chrono_literals;
 
 class foo {
-  thread th_;
   mutex mutex_;
   condition_variable cv_;
+  thread th_;
 
 public:
   void notify() { cv_.notify_all(); }
