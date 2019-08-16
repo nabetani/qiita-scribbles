@@ -1,10 +1,10 @@
 // -std=c++17 -Wall -O3
 #include <chrono>
 #include <deque>
+#include <functional>
 #include <iostream>
 #include <list>
 #include <vector>
-#include <functional>
 
 template <typename E> //
 inline void push_front(std::vector<E> &c, E const &e) {
@@ -38,11 +38,11 @@ using e262144 = element<262144>;
 using e1048576 = element<1048576>;
 
 template <typename C> //
-int test_impl(std::function<C()> const & proc) {
+int test_impl(std::function<C()> const &proc) {
   using namespace std::chrono;
   using clock = high_resolution_clock;
 
-  C cont[1000];
+  C cont[5000];
   for (auto &c : cont) {
     c = proc();
   }
@@ -50,7 +50,7 @@ int test_impl(std::function<C()> const & proc) {
 
   auto start = clock::now();
   for (auto &c : cont) {
-    for( int i=0 ; i<1 ; ++i ){
+    for (int i = 0; i < 1; ++i) {
       push_front(c, e);
     }
   }
@@ -63,17 +63,17 @@ template <typename E> //
 int test(int s, char t) {
   switch (t) {
   case 'V':
-    return test_impl<std::vector<E>>([s](){
+    return test_impl<std::vector<E>>([s]() {
       auto r = std::vector<E>(s);
-      r.reserve(s+1);
+      r.reserve(s + 1);
       return r;
     });
   case 'v':
-    return test_impl<std::vector<E>>([s](){ return std::vector<E>(s); });
+    return test_impl<std::vector<E>>([s]() { return std::vector<E>(s); });
   case 'd':
-    return test_impl<std::deque<E>>([s](){ return std::deque<E>(s); });
+    return test_impl<std::deque<E>>([s]() { return std::deque<E>(s); });
   case 'l':
-    return test_impl<std::list<E>>([s](){ return std:: list<E>(s); });
+    return test_impl<std::list<E>>([s]() { return std::list<E>(s); });
   default:
     return 1;
   }
