@@ -18,10 +18,24 @@ inline void push_front(vector<element_t> &c, element_t v) {
   c.insert(c.begin(), v);
 }
 
-template <typename container_t> //
+struct vec_reserver{
+  template< typename container_t>
+  static void reserve(container_t & c, size_t size ){
+    c.reserve(size);
+  }
+};
+
+struct null_reserver{
+  template< typename container_t>
+  static void reserve(container_t & , size_t ){
+  }
+};
+
+template <typename container_t, typename reserver_t> //
 struct tester {
   int64_t impl(size_t size) {
     container_t c(size);
+    reserver_t::reserve(c,size+1);
     typename container_t::value_type v{};
     for (auto &e : c) {
       e = ++v;
@@ -48,8 +62,9 @@ struct tester {
 };
 
 int main() {
-  for (size_t size = 1; size < (1 << 16); size*=2) {
-    tester<vector<char>>().run(size, "vector<char>");
-    tester<deque<char>>().run(size, "deque<char>");
+  for (size_t size = 1; size <= (1 << 16); size*=2) {
+    tester<vector<char>, vec_reserver>().run(size, "vector<char>+reserve");
+    tester<vector<char>, null_reserver>().run(size, "vector<char>");
+    tester<deque<char>, null_reserver>().run(size, "deque<char>");
   }
 }
