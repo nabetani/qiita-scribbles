@@ -20,7 +20,7 @@ inline void push_front(vector<element_t> &c, element_t v) {
 
 template <typename container_t> //
 struct tester {
-  int64_t impl(size_t size, bool output) {
+  int64_t impl(size_t size) {
     container_t c(size);
     typename container_t::value_type v{};
     for (auto &e : c) {
@@ -34,13 +34,13 @@ struct tester {
 
   void run(size_t size, char const *name) {
     // Preparation gymnastics
-    impl(size, false);
+    impl(size);
     // Preparation gymnastics
-    impl(size, false);
+    impl(size);
     //  Action!
     vector<int64_t> ticks(20);
     for (auto &e : ticks) {
-      e = impl(size, true);
+      e = impl(size);
     }
     auto min = *min_element(ticks.cbegin(), ticks.cend());
     cout << name << "," << size << "," << min << endl;
