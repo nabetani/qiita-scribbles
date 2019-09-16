@@ -1,6 +1,7 @@
 package gotouch
 
 import (
+	"runtime"
 	"syscall"
 	"time"
 )
@@ -18,15 +19,25 @@ func Touch(path string) error {
 		if e == syscall.ENOENT {
 			return true
 		}
-		// Windows では syscall.ERROR_PATH_NOT_FOUND を返すことがある。
-		// しかし、非 Windows 環境では syscall.ERROR_PATH_NOT_FOUND は定義されない。
-		// ifdef も使えない。別ファイルにするのはめんどくさい。
-		// 仕方ないので自分で定義する。
-		const ERROR_PATH_NOT_FOUND = 3 // 「don't use ALL_CAPS in Go names」と言われるが、 syscall に合わせる。
-		if errno, ok := e.(syscall.Errno); ok && errno == ERROR_PATH_NOT_FOUND {
-			return true
+		switch runtime.GOOS {
+		case "windows":
+			// Windows では syscall.ERROR_PATH_NOT_FOUND を返すことがある。
+			// しかし、非 Windows 環境では syscall.ERROR_PATH_NOT_FOUND は定義されない。
+			// ifdef も使えない。別ファイルにするのはめんどくさい。
+			// 仕方ないので自分で定義する。
+			const ERROR_PATH_NOT_FOUND = 3 // 「don't use ALL_CAPS in Go names」と言われるが、 syscall に合わせる。
+			if errno, ok := e.(syscall.Errno); ok && errno == ERROR_PATH_NOT_FOUND {
+				return true
+			}
+			return false
+		case "darwin":
+			return false
+		case "linux":
+			// たぶん OK だけど、テストしてない。
+			return false
+		default:
+			panic("you should write something here")
 		}
-		return false
 	}
 	if !isNoEnt(err) {
 		return err
