@@ -1,7 +1,6 @@
 package gotouch
 
 import (
-	"os"
 	"syscall"
 	"time"
 )
@@ -32,10 +31,10 @@ func Touch(path string) error {
 	if !isNoEnt(err) {
 		return err
 	}
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE, 0644)
+	fd, err := syscall.Open(path, syscall.O_CREAT|syscall.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer syscall.Close(fd)
 	return nil
 }

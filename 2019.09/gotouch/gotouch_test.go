@@ -3,6 +3,7 @@ package gotouch
 import (
 	"io/ioutil"
 	"os"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -66,9 +67,12 @@ func TestTouchAFileThatExists(t *testing.T) {
 func TestTouchUntachableFile(t *testing.T) {
 	target := "this/file/is/untachable/because/no/such/directory"
 	err := Touch(target)
-	_, ok := err.(*os.PathError)
+	errno, ok := err.(syscall.Errno)
 	if !ok {
-		t.Errorf("Touch returns %v(%T), want os.PathError", err, err)
+		t.Errorf("Touch returns %v(%T), want os.Errno", err, err)
+	}
+	if errno != syscall.ENOENT {
+		t.Errorf("Touch returns %v(%v), want syscall.ENOENT(%v)", errno, int64(errno), int64(syscall.ENOENT))
 	}
 	defer os.Remove(target)
 }
