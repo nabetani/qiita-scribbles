@@ -15,7 +15,7 @@ func Touch(path string) error {
 	if err == nil {
 		return nil
 	}
-	if err != syscall.ENOENT {
+	if err != syscall.ENOENT && err != syscall.ERROR_PATH_NOT_FOUND {
 		return err
 	}
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE, 0644)
