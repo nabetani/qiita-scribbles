@@ -15,7 +15,21 @@ func Touch(path string) error {
 	if err == nil {
 		return nil
 	}
-	if err != syscall.ENOENT && err != syscall.ERROR_PATH_NOT_FOUND {
+	isNoEnt := func(e error) bool {
+		if e == syscall.ENOENT {
+			return true
+		}
+		// Windows では syscall.ERROR_PATH_NOT_FOUND を返すことがある。
+		// しかし、非 Windows 環境では syscall.ERROR_PATH_NOT_FOUND は定義されない。
+		// ifdef も使えない。別ファイルにするのはめんどくさい。
+		// 仕方ないので自分で定義する。
+		const ERROR_PATH_NOT_FOUND = 3 // 「don't use ALL_CAPS in Go names」と言われるが、 syscall に合わせる。
+		if errno, ok := e.(syscall.Errno); ok && errno == ERROR_PATH_NOT_FOUND {
+			return true
+		}
+		return false
+	}
+	if !isNoEnt(err) {
 		return err
 	}
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE, 0644)
