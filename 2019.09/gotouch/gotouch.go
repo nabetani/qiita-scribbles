@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Touch は、 macOS などに含まれる touch コマンドを模倣する
 func Touch(path string) error {
 	now := time.Now().UnixNano()
 	const nano = 1000 * 1000 * 1000
