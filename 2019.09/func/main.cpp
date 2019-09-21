@@ -53,8 +53,8 @@ void use_fixfunc() {
   caller("simple func ptr", &simple_func);
   caller("with int", func_with_int_t{123});
   caller("with string", func_with_string_t{"hoge"});
-  // nabetani::fixfunc<int(int, int), size> f( func_with_sideeffect_t{} );
-  // cout << "with size effect: " << f(1,200) << endl;
+  nabetani::fixfunc<int(int, int), size> f( func_with_sideeffect_t{} );
+  cout << "with size effect: " << f(1,200) << endl;
 }
 
 void use_stdfunction() {
