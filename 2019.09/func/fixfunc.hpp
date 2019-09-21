@@ -31,6 +31,10 @@ public:
   }
 };
 
+template<typename t >
+inline void destruct( t * p ){
+  p->~t();
+}
 } // namespace detail
 
 template <typename, size_t> class fixfunc; // undefined
@@ -46,11 +50,16 @@ private:
   detail::funcbase<ret_t(args_t...)> *func_;
 
 public:
+  ~fixfunc()
+  {
+    detail::destruct(func_);
+  }
   template <typename t>
   fixfunc(t const &v)
       : func_(new (memory_.data()) detail::func<t, ret_t(args_t...)>(v)) //
   {
-    static_assert( sizeof(func_)<=size(), "sizeof(func_) should not be greater than size of buffer" );
+    static_assert(sizeof(func_) <= size(),
+                  "sizeof(func_) should not be greater than size of buffer");
   }
   template <typename... proc_args_t> ret_t operator()(args_t... args) const {
     return (*func_)(args...);
