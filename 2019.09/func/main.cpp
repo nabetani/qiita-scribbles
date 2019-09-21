@@ -106,6 +106,28 @@ void calc_size() {
   std::cout << "size3:" << size3 << std::endl;
   std::cout << "size12:" << size12 << std::endl;
   std::cout << "size123:" << size123 << std::endl;
+
+  using f0a = nabetani::fixfunc<int(int,int), size0a>;
+  using f1 = nabetani::fixfunc<int(int,int), size1>;
+  using f2 = nabetani::fixfunc<int(int,int), size2>;
+  using f3 = nabetani::fixfunc<int(int,int), size3>;
+
+  f0a v0a = simple_func;
+  f1 v1 = func_with_int_t{};
+  f2 v2 = func_with_four_ints_t{};
+  f3 v3 = func_with_many_ints_t{};
+
+#if 0
+  using f0am = nabetani::fixfunc<int(int,int), size0a-1>;
+  using f1m = nabetani::fixfunc<int(int,int), size1-1>;
+  using f2m = nabetani::fixfunc<int(int,int), size2-1>;
+  using f3m = nabetani::fixfunc<int(int,int), size3-1>;
+
+  f0am v0am = simple_func; // compile error
+  f1m v1m = func_with_int_t{}; // compile error
+  f2m v2m = func_with_four_ints_t{}; // compile error
+  f3m v3m = func_with_many_ints_t{}; // compile error
+#endif
 }
 
 int main(int argc, char const *argv[]) {
