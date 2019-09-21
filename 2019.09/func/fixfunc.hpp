@@ -12,7 +12,7 @@ template <typename ret_t_, typename... args_t>
 class funcbase<ret_t_(args_t...)> {
 public:
   using ret_t = ret_t_;
-  virtual ret_t operator()(args_t... args) const = 0;
+  virtual ret_t operator()(args_t... args) = 0;
   virtual ~funcbase() {}
 };
 
@@ -26,7 +26,7 @@ public:
   instance_t i_;
   func(instance_t const &i) : i_(i) {}
   func(instance_t &&i) : i_(std::move(i)) {}
-  virtual ret_t operator()(args_t... args) const override {
+  virtual ret_t operator()(args_t... args) override {
     return i_(args...);
   }
 };
@@ -43,7 +43,7 @@ public:
   constexpr static size_t size() { return size_; }
 
 private:
-  std::array<char, size()> memory_;
+  mutable std::array<char, size()> memory_;
   detail::funcbase<ret_t(args_t...)> *func_;
 
 public:
