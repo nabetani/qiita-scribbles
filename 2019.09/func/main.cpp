@@ -18,6 +18,14 @@ struct func_with_int_t {
   }
 };
 
+struct func_with_many_ints_t {
+  std::array<int,100> m={};
+  int operator()(int a, int b) const {
+    cout << "in " << __FUNCTION__ << endl;
+    return a + b + m[0];
+  }
+};
+
 struct func_with_string_t {
   explicit func_with_string_t(char const *s) : m(s) {
     cout << "ctor of func_with_string_t" << endl;
@@ -71,7 +79,20 @@ void use_stdfunction() {
   cout << "with size effect: " << f(1, 200) << endl;
 }
 
+void calc_size(){
+  using ft = nabetani::func_type<int(int,int)>;
+  // constexpr size_t size0a = ft::size<decltype(simple_func)>();
+  // constexpr size_t size0b = ft::size<decltype(simple_func)*>();
+  constexpr size_t size1 = ft::size<func_with_int_t>();
+  constexpr size_t size2 = ft::size<func_with_many_ints_t>();
+  // std::cout << "size0a:" << size0a << std::endl;
+  // std::cout << "size0b:" << size0b << std::endl;
+  std::cout << "size1:" << size1 << std::endl;
+  std::cout << "size2:" << size2 << std::endl;
+}
+
 int main(int argc, char const *argv[]) {
+  calc_size();
   use_fixfunc();
   use_stdfunction();
 }
