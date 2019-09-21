@@ -6,28 +6,29 @@
 namespace nabetani {
 namespace detail {
 
-template <typename> class funcbase; // undefined
+template <typename> class funcbase_t; // undefined
 
 template <typename ret_t_, typename... args_t>
-class funcbase<ret_t_(args_t...)> {
+class funcbase_t<ret_t_(args_t...)> {
 public:
   using ret_t = ret_t_;
   virtual ret_t operator()(args_t... args) = 0;
   virtual void clone_to(char *memory) const = 0;
-  virtual ~funcbase() {}
+  virtual ~funcbase_t() {}
 };
 
-template <typename instance_t, typename> class func; // undefined
+template <typename instance_t, typename> class func_t; // undefined
 
 template <typename instance_t, typename ret_t_, typename... args_t>
-class func<instance_t, ret_t_(args_t...)> : public funcbase<ret_t_(args_t...)> {
+class func_t<instance_t, ret_t_(args_t...)>
+    : public funcbase_t<ret_t_(args_t...)> {
 public:
   using ret_t = ret_t_;
-  func() = delete;
+  func_t() = delete;
   instance_t i_;
-  func(instance_t const &i) : i_(i) {}
-  func(instance_t &&i) : i_(std::move(i)) {}
-  void clone_to(char *memory) const override { new (memory) func(i_); }
+  func_t(instance_t const &i) : i_(i) {}
+  func_t(instance_t &&i) : i_(std::move(i)) {}
+  void clone_to(char *memory) const override { new (memory) func_t(i_); }
   ret_t operator()(args_t... args) override { return i_(args...); }
 };
 
@@ -44,25 +45,25 @@ public:
 
 private:
   mutable std::array<char, size()> memory_;
-  using func_t = detail::funcbase<ret_t(args_t...)>;
+  using func_t = detail::funcbase_t<ret_t(args_t...)>;
   func_t *func() { return reinterpret_cast<func_t *>(memory_.data()); };
-  func_t const *func() const { return reinterpret_cast<func_t const *>(memory_.data()); };
+  func_t const *func() const {
+    return reinterpret_cast<func_t const *>(memory_.data());
+  };
 
 public:
   ~fixfunc() { detail::destruct(func()); }
 
   // NOT explicit
   template <typename t> fixfunc(t const &v) {
-    static_assert(sizeof(func_t) <= size(),
-                  "sizeof(func_t) should not be greater than size of buffer");
-    new (memory_.data()) detail::func<t, ret_t(args_t...)>(v);
+    using actual_func_t = detail::func_t<t, ret_t(args_t...)>;
+    static_assert(
+        sizeof(actual_func_t) <= size(),
+        "sizeof(actual_func_t) should not be greater than size of buffer");
+    new (memory_.data()) actual_func_t(v);
   }
 
-  fixfunc(fixfunc const &that) {
-    static_assert(sizeof(func_t) <= size(),
-                  "sizeof(func_t) should not be greater than size of buffer");
-    that.func()->clone_to(memory_.data());
-  }
+  fixfunc(fixfunc const &that) { that.func()->clone_to(memory_.data()); }
 
   fixfunc &operator=(fixfunc const &that) {
     fixfunc tmp(that);
@@ -73,6 +74,9 @@ public:
   void swap(fixfunc &that) noexcept { std::swap(memory_, that.memory_); }
 
   template <typename... proc_args_t> ret_t operator()(args_t... args) const {
+    return (*func())(args...);
+  }
+  template <typename... proc_args_t> ret_t operator()(args_t... args) {
     return (*func())(args...);
   }
 };
