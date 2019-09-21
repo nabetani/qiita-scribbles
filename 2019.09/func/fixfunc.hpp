@@ -47,8 +47,8 @@ private:
   mutable std::array<char, size()> memory_;
   using func_t = detail::funcbase_t<ret_t(args_t...)>;
   func_t *func() { return reinterpret_cast<func_t *>(memory_.data()); };
-  func_t const *func() const {
-    return reinterpret_cast<func_t const *>(memory_.data());
+  func_t *func() const {
+    return reinterpret_cast<func_t *>(memory_.data());
   };
 
 public:
