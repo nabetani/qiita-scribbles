@@ -62,6 +62,14 @@ public:
         "sizeof(actual_func_t) should not be greater than size of buffer");
     new (memory_.data()) actual_func_t(v);
   }
+  // NOT explicit
+  fixfunc(ret_t (*v)(args_t...)) {
+    using actual_func_t = detail::func_t<decltype(v), ret_t(args_t...)>;
+    static_assert(
+        sizeof(actual_func_t) <= size(),
+        "sizeof(actual_func_t) should not be greater than size of buffer");
+    new (memory_.data()) actual_func_t(v);
+  }
 
   fixfunc(fixfunc const &that) { that.func()->clone_to(memory_.data()); }
 

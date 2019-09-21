@@ -1,7 +1,8 @@
-#include "fixfunc.hpp"
-#include "gtest/gtest.h"
 #include <functional>
 #include <iostream>
+
+#include "fixfunc.hpp"
+#include "gtest/gtest.h"
 
 namespace {
 
@@ -53,7 +54,7 @@ TEST(with_counter, count_ctor_dtor) {
   ASSERT_EQ(0, with_counter::counter);
 }
 
-TEST(call, call) {
+TEST(call, object_with_funcop) {
   int call_count = 0;
   int arg = 0;
   with_counter::counter = 0;
@@ -77,6 +78,62 @@ TEST(call, call) {
   ASSERT_EQ(123 + 789, r2);
   ASSERT_EQ(789, arg);
   ASSERT_EQ(2, call_count);
+}
+
+TEST(call, lambda) {
+  int cc0 = 0;
+  nabetani::fixfunc<int(int), 100> f = [&](int a) -> int {
+    ++cc0;
+    return a + 1000;
+  };
+  auto r0 = f(1);
+  ASSERT_EQ(1001, r0);
+  ASSERT_EQ(1, cc0);
+  int cc1 = 0;
+  f = [&](int a) -> int {
+    ++cc1;
+    return a + 2000;
+  };
+  auto r1 = f(2);
+  ASSERT_EQ(2002, r1);
+  ASSERT_EQ(1, cc0);
+  ASSERT_EQ(1, cc1);
+}
+
+int global_cc = 0;
+
+int func0(int a) {
+  ++global_cc;
+  return 3000 + a;
+}
+
+int func1(int a) {
+  ++global_cc;
+  return 4000 + a;
+}
+
+TEST(call, funcptr) {
+  global_cc = 0;
+  nabetani::fixfunc<int(int), 100> f = &func0;
+  auto r0 = f(11);
+  ASSERT_EQ( 3011, r0 );
+  ASSERT_EQ( 1, global_cc );
+  f = &func1;
+  auto r1 = f(22);
+  ASSERT_EQ( 4022, r1 );
+  ASSERT_EQ( 2, global_cc );
+}
+
+TEST(call, func) {
+  global_cc = 0;
+  nabetani::fixfunc<int(int), 100> f = func0;
+  auto r0 = f(11);
+  ASSERT_EQ( 3011, r0 );
+  ASSERT_EQ( 1, global_cc );
+  f = func1;
+  auto r1 = f(22);
+  ASSERT_EQ( 4022, r1 );
+  ASSERT_EQ( 2, global_cc );
 }
 
 } // namespace
