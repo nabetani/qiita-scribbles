@@ -18,8 +18,16 @@ struct func_with_int_t {
   }
 };
 
+struct func_with_four_ints_t {
+  int m, n, o, p;
+  int operator()(int a, int b) const {
+    cout << "in " << __FUNCTION__ << endl;
+    return a + b + m;
+  }
+};
+
 struct func_with_many_ints_t {
-  std::array<int,100> m={};
+  std::array<int, 100> m = {};
   int operator()(int a, int b) const {
     cout << "in " << __FUNCTION__ << endl;
     return a + b + m[0];
@@ -61,8 +69,8 @@ void use_fixfunc() {
   caller("simple func ptr", &simple_func);
   caller("with int", func_with_int_t{123});
   caller("with string", func_with_string_t{"hoge"});
-  nabetani::fixfunc<int(int, int), size> f( func_with_sideeffect_t{} );
-  cout << "with size effect: " << f(1,200) << endl;
+  nabetani::fixfunc<int(int, int), size> f(func_with_sideeffect_t{});
+  cout << "with size effect: " << f(1, 200) << endl;
 }
 
 void use_stdfunction() {
@@ -79,16 +87,25 @@ void use_stdfunction() {
   cout << "with size effect: " << f(1, 200) << endl;
 }
 
-void calc_size(){
-  using ft = nabetani::func_type<int(int,int)>;
-  // constexpr size_t size0a = ft::size<decltype(simple_func)>();
-  // constexpr size_t size0b = ft::size<decltype(simple_func)*>();
+void calc_size() {
+  using ft = nabetani::func_type<int(int, int)>;
+  constexpr size_t size0a = ft::size<decltype(simple_func)>();
+  constexpr size_t size0b = ft::size<decltype(simple_func) *>();
   constexpr size_t size1 = ft::size<func_with_int_t>();
-  constexpr size_t size2 = ft::size<func_with_many_ints_t>();
-  // std::cout << "size0a:" << size0a << std::endl;
-  // std::cout << "size0b:" << size0b << std::endl;
+  constexpr size_t size2 = ft::size<func_with_four_ints_t>();
+  constexpr size_t size3 = ft::size<func_with_many_ints_t>();
+  constexpr size_t size12 =
+      ft::size<func_with_int_t, func_with_four_ints_t>();
+  constexpr size_t size123 =
+      ft::size<func_with_int_t, func_with_four_ints_t, func_with_many_ints_t>();
+
+  std::cout << "size0a:" << size0a << std::endl;
+  std::cout << "size0b:" << size0b << std::endl;
   std::cout << "size1:" << size1 << std::endl;
   std::cout << "size2:" << size2 << std::endl;
+  std::cout << "size3:" << size3 << std::endl;
+  std::cout << "size12:" << size12 << std::endl;
+  std::cout << "size123:" << size123 << std::endl;
 }
 
 int main(int argc, char const *argv[]) {

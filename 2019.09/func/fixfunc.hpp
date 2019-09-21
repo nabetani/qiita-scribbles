@@ -43,11 +43,13 @@ class func_type< ret_t(args_t...)>
   static constexpr size_t max_size_t( size_t a, size_t b ){
     return a<b ? b : a;
   }
+  template< typename t > struct portable { using type=t; };
+  template< typename r, typename ...a > struct portable< r(a...) >{ using type=r(*)(a...); };
 public:
   template< typename args_t0, typename ... arg_types >//
   static constexpr size_t size()
   {
-    using f0 = detail::func_t<args_t0, ret_t(args_t...)>;
+    using f0 = detail::func_t< typename portable<args_t0>::type, ret_t(args_t...)>;
     return max_size_t( sizeof(f0), size_impl<sizeof...(arg_types)==0, arg_types...>::count );
   }
 private:
