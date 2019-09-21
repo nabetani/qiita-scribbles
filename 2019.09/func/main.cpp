@@ -19,19 +19,13 @@ struct func_with_int_t {
 };
 
 struct func_with_string_t {
-  explicit
-  func_with_string_t( char const * s) : m(s)
-  {
+  explicit func_with_string_t(char const *s) : m(s) {
     cout << "ctor of func_with_string_t" << endl;
   }
-  func_with_string_t( func_with_string_t const & that ) : m(that.m)
-  {
+  func_with_string_t(func_with_string_t const &that) : m(that.m) {
     cout << "copy-ctor of func_with_string_t" << endl;
   }
-  ~func_with_string_t()
-  {
-    cout << "dtor of func_with_string_t" << endl;
-  }
+  ~func_with_string_t() { cout << "dtor of func_with_string_t" << endl; }
   std::string m;
   int operator()(int a, int b) const {
     cout << "in " << __FUNCTION__ << endl;
@@ -44,8 +38,8 @@ struct func_with_sideeffect_t {
   int m_;
   int operator()(int a, int b) {
     cout << "in " << __FUNCTION__ << endl;
-    m_ += a+b;
-    return a + b+m_;
+    m_ += a + b;
+    return a + b + m_;
   }
 };
 
@@ -55,7 +49,7 @@ void use_fixfunc() {
                    nabetani::fixfunc<int(int, int), size> const &proc) {
     cout << name << ": " << proc(1, 200) << endl;
   };
-  //caller("simple func", simple_func);
+  // caller("simple func", simple_func);
   caller("simple func ptr", &simple_func);
   caller("with int", func_with_int_t{123});
   caller("with string", func_with_string_t{"hoge"});
@@ -67,14 +61,14 @@ void use_stdfunction() {
   auto caller = [](char const *name, function<int(int, int)> const &proc) {
     cout << name << ": " << proc(1, 200) << endl;
   };
-  //caller("simple func", simple_func);
+  // caller("simple func", simple_func);
   caller("simple func ptr", &simple_func);
   caller("with int", func_with_int_t{123});
   caller("with string", func_with_string_t{"hoge"});
-  caller("with side effect", func_with_sideeffect_t{} );
+  caller("with side effect", func_with_sideeffect_t{});
 
-  function<int(int, int)> f( func_with_sideeffect_t{} );
-  cout << "with size effect: " << f(1,200) << endl;
+  function<int(int, int)> f(func_with_sideeffect_t{});
+  cout << "with size effect: " << f(1, 200) << endl;
 }
 
 int main(int argc, char const *argv[]) {
