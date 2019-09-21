@@ -117,7 +117,9 @@ void calc_size() {
   f2 v2 = func_with_four_ints_t{};
   f3 v3 = func_with_many_ints_t{};
 
+
 #if 0
+  v0a = func_with_many_ints_t{}; // compile error
   using f0am = nabetani::fixfunc<int(int,int), size0a-1>;
   using f1m = nabetani::fixfunc<int(int,int), size1-1>;
   using f2m = nabetani::fixfunc<int(int,int), size2-1>;
