@@ -1,4 +1,4 @@
-package main
+package marshaljsonf64
 
 import (
 	"encoding/json"
@@ -9,19 +9,7 @@ import (
 	"strings"
 )
 
-type Hoge struct {
-	Foo uint32
-	Bar uint64
-	Baz float32
-	Qux float64
-}
-
-type Fuga struct {
-	Hoge
-	Piyo string
-}
-
-func marshalJSONF64(o interface{}, t reflect.Type) ([]byte, error) {
+func MarshalJSONF64(o interface{}, t reflect.Type) ([]byte, error) {
 	numf := t.NumField()
 	oval := reflect.ValueOf(o).Elem()
 	log.Println(oval)
@@ -43,29 +31,4 @@ func marshalJSONF64(o interface{}, t reflect.Type) ([]byte, error) {
 		}
 	}
 	return []byte("{" + strings.Join(items, ",") + "}"), nil
-}
-
-func (h Hoge) MarshalJSON() ([]byte, error) {
-	s, err := marshalJSONF64(&h, reflect.TypeOf(h))
-	return s, err
-}
-
-func (f Fuga) MarshalJSON() ([]byte, error) {
-	s, err := marshalJSONF64(&f, reflect.TypeOf(f))
-	return s, err
-}
-
-func main() {
-	fuga := Fuga{
-		Hoge: Hoge{
-			Foo: 0xf1000000,
-			Bar: 0xf1000000,
-			Baz: 0xf1000000,
-			Qux: 0xf1000000,
-		},
-		Piyo: "piyo",
-	}
-	j, err := json.Marshal(&fuga)
-	log.Println("err:", err)
-	fmt.Println(string(j))
 }
